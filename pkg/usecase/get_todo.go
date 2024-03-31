@@ -1,0 +1,30 @@
+package usecase
+
+import (
+	"context"
+
+	"github.com/km1110/task-copilot-server/pkg/domain/model"
+	"github.com/km1110/task-copilot-server/pkg/domain/repository"
+	"golang.org/x/xerrors"
+)
+
+type getTodo struct {
+	repoTodo repository.Todo
+}
+
+func NewGetTodo(rt repository.Todo) *getTodo {
+	return &getTodo{repoTodo: rt}
+}
+
+func (uc *getTodo) Exec(ctx context.Context, userID string) ([]*model.Todo, error) {
+	if !model.IsValidTodoID(userID) {
+		return nil, xerrors.Errorf("!model.IsValidTodoID: userID is invalid")
+	}
+
+	t, err := uc.repoTodo.GetTodos(ctx, userID)
+	if err != nil {
+		return nil, xerrors.Errorf("uc.repoTodo.GetTodos: %v", err)
+	}
+
+	return t, nil
+}
