@@ -17,8 +17,7 @@ func NewTodo(db *sql.DB) *Todo {
 }
 
 func (trepo *Todo) GetTodos(ctx context.Context, userID string) ([]*model.Todo, error) {
-	// TODO: make query
-	query := `SELECT FROM WHERE`
+	query := `SELECT "id", "name", "target_date", "done_date", "status" FROM "todos" WHERE "user_id" = $1;`
 
 	rows, err := trepo.db.QueryContext(ctx, query, userID)
 	if err != nil {
