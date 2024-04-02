@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi"
 	"github.com/km1110/task-copilot-server/pkg/domain/model"
 	"github.com/km1110/task-copilot-server/pkg/infrastructure/repository"
 	"github.com/km1110/task-copilot-server/pkg/usecase"
@@ -14,8 +15,8 @@ import (
 type todoResponse struct {
 	ID         string    `json:"id"`
 	Name       string    `json:"name"`
-	TargetDate time.Time `json:"targetdate"`
-	DoneDate   time.Time `json:"donedate"`
+	TargetDate time.Time `json:"target_date"`
+	DoneDate   time.Time `json:"done_date"`
 	Status     bool      `json:"status"`
 }
 
@@ -61,4 +62,95 @@ func GetTodos(db *sql.DB) http.HandlerFunc {
 	}
 
 	return handler
+}
+
+func CreateTodo(db *sql.DB) http.HandlerFunc {
+	repoTodo := repository.NewTodo(db)
+	ucTodo := usecase.NewCreateTodo(repoTodo)
+
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		var reqBody createTodoRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		userID := "hoge"
+
+		todo, err := ucTodo.Exec(r.Context(), userID, reqBody.Name, reqBody.TargetDate, reqBody.DoneDate, reqBody.Status)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		res := newTodoResponse(todo)
+		if err := json.NewEncoder(w).Encode(res); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	return handler
+}
+
+func UpdateTodo(db *sql.DB) http.HandlerFunc {
+	repoTodo := repository.NewTodo(db)
+	ucTodo := usecase.NewUpdateTodo(repoTodo)
+
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		var reqBody updateTodoRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		todoID := chi.URLParam(r, "todo_id")
+
+		todo, err := ucTodo.Exec(r.Context(), todoID, reqBody.Name, reqBody.TargetDate, reqBody.DoneDate, reqBody.Status)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		res := newTodoResponse(todo)
+		if err := json.NewEncoder(w).Encode(res); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	return handler
+}
+
+func DeleteTodo(db *sql.DB) http.HandlerFunc {
+	repoTodo := repository.NewTodo(db)
+	ucTodo := usecase.NewDeleteTodo(repoTodo)
+
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		todoID := chi.URLParam(r, "todo_id")
+
+		err := ucTodo.Exec(r.Context(), todoID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+		}
+
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	return handler
+}
+
+type createTodoRequest struct {
+	Name       string    `json:"name"`
+	TargetDate time.Time `json:"target_date"`
+	DoneDate   time.Time `json:"done_date"`
+	Status     bool      `json:"status"`
+}
+
+type updateTodoRequest struct {
+	Name       string    `json:"name"`
+	TargetDate time.Time `json:"target_date"`
+	DoneDate   time.Time `json:"done_date"`
+	Status     bool      `json:"status"`
 }
