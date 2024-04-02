@@ -16,14 +16,14 @@ func NewGetTodo(rt repository.Todo) *getTodo {
 	return &getTodo{repoTodo: rt}
 }
 
-func (uc *getTodo) Exec(ctx context.Context, userID string) ([]*model.Todo, error) {
+func (gt *getTodo) Exec(ctx context.Context, userID string) ([]*model.Todo, error) {
 	if !model.IsValidTodoID(userID) {
 		return nil, xerrors.Errorf("!model.IsValidTodoID: userID is invalid")
 	}
 
-	t, err := uc.repoTodo.GetTodos(ctx, userID)
+	t, err := gt.repoTodo.GetTodos(ctx, userID)
 	if err != nil {
-		return nil, xerrors.Errorf("uc.repoTodo.GetTodos: %v", err)
+		return nil, xerrors.Errorf("gt.repoTodo.GetTodos: %v", err)
 	}
 
 	return t, nil

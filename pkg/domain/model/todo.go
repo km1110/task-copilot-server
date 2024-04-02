@@ -14,12 +14,12 @@ type Todo struct {
 	Status     bool
 }
 
-func NewTodo(id, name string, targetdate, donedate time.Time, status bool) *Todo {
+func NewTodo(id, name string, target_date, done_date time.Time, status bool) *Todo {
 	return &Todo{
 		ID:         NewTodoID(),
 		Name:       name,
-		TargetDate: targetdate,
-		DoneDate:   donedate,
+		TargetDate: target_date,
+		DoneDate:   done_date,
 		Status:     status,
 	}
 }
