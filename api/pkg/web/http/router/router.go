@@ -31,9 +31,9 @@ func newHandlers(db *sql.DB) http.Handler {
 
 	r.Route("/todos", func(r chi.Router) {
 		r.Get("", controller.GetTodos(db))
-		// r.Post("", controller.CreateTodo(db))
-		// r.Patch("/{todoID}", controller.UpdateTodo(db))
-		// r.Delete("/{todoID}", controller.DeleteTodo(db))
+		r.Post("", controller.CreateTodo(db))
+		r.Patch("/{todoID}", controller.UpdateTodo(db))
+		r.Delete("/{todoID}", controller.DeleteTodo(db))
 	})
 
 	return r
