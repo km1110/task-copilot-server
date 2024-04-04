@@ -17,8 +17,8 @@ func NewCreateTodo(rt repository.Todo) *createTodo {
 	return &createTodo{repoTodo: rt}
 }
 
-func (ct *createTodo) Exec(ctx context.Context, userID, name string, target_date, done_date time.Time, status bool) (*model.Todo, error) {
-	t := model.NewTodo(model.NewTodoID(), name, target_date, done_date, status)
+func (ct *createTodo) Exec(ctx context.Context, userID, name string, target_date time.Time) (*model.Todo, error) {
+	t := model.NewTodo(model.NewTodoID(), name, target_date, time.Time{}, false)
 
 	newTodo, err := ct.repoTodo.CreateTodo(ctx, userID, t)
 	if err != nil {

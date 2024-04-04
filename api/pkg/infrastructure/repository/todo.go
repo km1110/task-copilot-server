@@ -48,7 +48,7 @@ func (trepo *Todo) GetTodos(ctx context.Context, userID string) ([]*model.Todo, 
 func (trepo *Todo) CreateTodo(ctx context.Context, userID string, t *model.Todo) (*model.Todo, error) {
 	query := `INSERT INTO todos("id", "user_id", "name", "target_date", "done_date", "status") VALUES($1, $2, $3, $4, $5, $6);`
 
-	_, err := trepo.db.ExecContext(ctx, query, t.ID, userID, t.Name, t.TargetDate, t.DoneDate, t.Status)
+	_, err := trepo.db.ExecContext(ctx, query, t.ID, userID, t.Name, t.TargetDate, t.TargetDate, t.Status)
 	if err != nil {
 		return nil, xerrors.Errorf("trepo.db.ExecContext: %v", err)
 	}
