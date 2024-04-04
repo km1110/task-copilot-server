@@ -4,25 +4,19 @@ services:
   api:
     container_name: task-copilot-api
     build:
-      context: .
+      context: ./api
       dockerfile: ./Dockerfile
       target: develop
     tty: true
     restart: always
     env_file:
       - .env
-    # environment:
-    #   - POSTGRES_USER=user
-    #   - POSTGRES_PASSWORD=pass
-    #   - POSTGRES_DB=todo-db
-    #   - POSTGRES_HOST=postgresql
-    #   - ENVIRONMENT=develop
     depends_on:
       - postgresql
     ports:
       - 8080:8080
     volumes:
-      - ./api:/go/src/github.com/km1110/task-copilot
+      - ./api:/go/src/github.com/km1110/task-copilot-server
   postgresql:
     container_name: task-copilot-postgresql
     build:
@@ -32,10 +26,6 @@ services:
     restart: always
     env_file:
       - .env
-    # environment:
-    #   - POSTGRES_USER=user
-    #   - POSTGRES_PASSWORD=pass
-    #   - POSTGRES_DB=todo-db
     ports:
       - 5432:5432
     volumes:
