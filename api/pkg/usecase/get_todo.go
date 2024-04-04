@@ -17,8 +17,8 @@ func NewGetTodo(rt repository.Todo) *getTodo {
 }
 
 func (gt *getTodo) Exec(ctx context.Context, userID string) ([]*model.Todo, error) {
-	if !model.IsValidTodoID(userID) {
-		return nil, xerrors.Errorf("!model.IsValidTodoID: userID is invalid")
+	if !model.IsValidUserID(userID) {
+		return nil, xerrors.Errorf("!model.IsValidUserID: userID is invalid")
 	}
 
 	t, err := gt.repoTodo.GetTodos(ctx, userID)
