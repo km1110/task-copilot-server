@@ -44,7 +44,7 @@ func GetTodos(db *sql.DB) http.HandlerFunc {
 
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		// TODO: ユーザーIDの取得方法を作成
-		userID := "hoge"
+		userID := "b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2b1"
 
 		todo, err := ucGetTodo.Exec(r.Context(), userID)
 		if err != nil {
@@ -75,9 +75,9 @@ func CreateTodo(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		userID := "hoge"
+		userID := "b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2b1"
 
-		todo, err := ucTodo.Exec(r.Context(), userID, reqBody.Name, reqBody.TargetDate, reqBody.DoneDate, reqBody.Status)
+		todo, err := ucTodo.Exec(r.Context(), userID, reqBody.Name, reqBody.TargetDate)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -88,7 +88,7 @@ func CreateTodo(db *sql.DB) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusCreated)
 	}
 	return handler
 }
@@ -117,7 +117,7 @@ func UpdateTodo(db *sql.DB) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusNoContent)
 	}
 
 	return handler
@@ -128,14 +128,14 @@ func DeleteTodo(db *sql.DB) http.HandlerFunc {
 	ucTodo := usecase.NewDeleteTodo(repoTodo)
 
 	handler := func(w http.ResponseWriter, r *http.Request) {
-		todoID := chi.URLParam(r, "todo_id")
+		todoID := chi.URLParam(r, "todoID")
 
 		err := ucTodo.Exec(r.Context(), todoID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusNoContent)
 	}
 
 	return handler
