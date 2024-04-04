@@ -1,4 +1,4 @@
-package database
+package postgresql
 
 import (
 	"database/sql"
@@ -7,19 +7,19 @@ import (
 	"time"
 
 	"github.com/km1110/task-copilot-server/pkg/config"
+	_ "github.com/lib/pq"
 )
 
 func NewDB() (*sql.DB, error) {
 	dsn := fmt.Sprintf(
-		"%s://%s:%s@%s:%s/%s?sslmode=disable",
-		config.Env.POSTGRES_DRIVER,
+		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		config.Env.POSTGRES_USER,
 		config.Env.POSTGRES_PASSWORD,
 		config.Env.POSTGRES_HOST,
 		"5432",
 		config.Env.POSTGRES_DB,
 	)
-	db, err := sql.Open(config.Env.POSTGRES_DRIVER, dsn)
+	db, err := sql.Open("postgres", dsn)
 
 	if err != nil {
 		tryConnCnt := 1
@@ -36,6 +36,8 @@ func NewDB() (*sql.DB, error) {
 	if err := db.Ping(); err != nil {
 		return nil, err
 	}
+
+	fmt.Println("Connection has been established!")
 
 	return db, nil
 }
