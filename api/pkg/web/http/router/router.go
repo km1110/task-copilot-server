@@ -6,12 +6,12 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-	"github.com/km1110/task-copilot-server/pkg/infrastructure/database"
+	"github.com/km1110/task-copilot-server/pkg/infrastructure/database/postgresql"
 	"github.com/km1110/task-copilot-server/pkg/web/http/controller"
 )
 
 func InitRouter() {
-	db, err := database.NewDB()
+	db, err := postgresql.NewDB()
 	if err != nil {
 		panic(err)
 	}
@@ -30,8 +30,8 @@ func newHandlers(db *sql.DB) http.Handler {
 	r := chi.NewRouter()
 
 	r.Route("/todos", func(r chi.Router) {
-		r.Get("", controller.GetTodos(db))
-		r.Post("", controller.CreateTodo(db))
+		r.Get("/", controller.GetTodos(db))
+		r.Post("/", controller.CreateTodo(db))
 		r.Patch("/{todoID}", controller.UpdateTodo(db))
 		r.Delete("/{todoID}", controller.DeleteTodo(db))
 	})

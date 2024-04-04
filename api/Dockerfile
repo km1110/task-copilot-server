@@ -1,7 +1,7 @@
 # develop
 FROM golang:1.22 AS develop
 
-WORKDIR /go/src/github.com/km1110/task-copilot
+WORKDIR /go/src/github.com/km1110/task-copilot-server
 
 COPY go.mod ./
 COPY go.sum ./
@@ -17,7 +17,7 @@ CMD ["air", "-c", ".air.toml"]
 ## Build
 FROM golang:1.22 AS build
 
-WORKDIR /go/src/github.com/km1110/task-copilot
+WORKDIR /go/src/github.com/km1110/task-copilot-server
 
 COPY go.mod ./
 COPY go.sum ./
