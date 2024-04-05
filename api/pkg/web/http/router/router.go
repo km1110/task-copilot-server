@@ -36,5 +36,8 @@ func newHandlers(db *sql.DB) http.Handler {
 		r.Delete("/{todoID}", controller.DeleteTodo(db))
 	})
 
+	// health check
+	r.Get("/health", controller.Health(db))
+
 	return r
 }
