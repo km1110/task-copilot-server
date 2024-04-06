@@ -29,15 +29,10 @@ func InitRouter() {
 func newHandlers(db *sql.DB) http.Handler {
 	r := chi.NewRouter()
 
-	r.Route("/todos", func(r chi.Router) {
-		r.Get("/", controller.GetTodos(db))
-		r.Post("/", controller.CreateTodo(db))
-		r.Patch("/{todoID}", controller.UpdateTodo(db))
-		r.Delete("/{todoID}", controller.DeleteTodo(db))
-	})
-
 	// health check
 	r.Get("/health", controller.Health(db))
+
+	initTodoRouter(r, db)
 
 	return r
 }
