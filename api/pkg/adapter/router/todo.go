@@ -4,7 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/go-chi/chi"
-	"github.com/km1110/task-copilot-server/pkg/web/http/controller"
+	"github.com/km1110/task-copilot-server/pkg/adapter/controller"
 )
 
 func initTodoRouter(r *chi.Mux, db *sql.DB) {

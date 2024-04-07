@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/km1110/task-copilot-server/pkg/adapter/controller"
 	"github.com/km1110/task-copilot-server/pkg/infrastructure/database/postgresql"
-	"github.com/km1110/task-copilot-server/pkg/web/http/controller"
 )
 
 func InitRouter() {
