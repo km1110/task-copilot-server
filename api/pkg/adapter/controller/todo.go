@@ -13,20 +13,20 @@ import (
 )
 
 type todoResponse struct {
-	ID         string    `json:"id"`
-	Name       string    `json:"name"`
-	TargetDate time.Time `json:"target_date"`
-	DoneDate   time.Time `json:"done_date"`
-	Status     bool      `json:"status"`
+	ID           string    `json:"id"`
+	Name         string    `json:"name"`
+	TargetDate   time.Time `json:"target_date"`
+	DoneDate     time.Time `json:"done_date"`
+	Is_completed bool      `json:"is_completed"`
 }
 
 func newTodoResponse(t *model.Todo) *todoResponse {
 	return &todoResponse{
-		ID:         t.ID,
-		Name:       t.Name,
-		TargetDate: t.TargetDate,
-		DoneDate:   t.DoneDate,
-		Status:     t.Status,
+		ID:           t.ID,
+		Name:         t.Name,
+		TargetDate:   t.TargetDate,
+		DoneDate:     t.DoneDate,
+		Is_completed: t.Is_completed,
 	}
 }
 
@@ -106,7 +106,7 @@ func UpdateTodo(db *sql.DB) http.HandlerFunc {
 
 		todoID := chi.URLParam(r, "todo_id")
 
-		todo, err := ucTodo.Exec(r.Context(), todoID, reqBody.Name, reqBody.TargetDate, reqBody.DoneDate, reqBody.Status)
+		todo, err := ucTodo.Exec(r.Context(), todoID, reqBody.Name, reqBody.TargetDate, reqBody.DoneDate, reqBody.Is_completed)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -142,15 +142,15 @@ func DeleteTodo(db *sql.DB) http.HandlerFunc {
 }
 
 type createTodoRequest struct {
-	Name       string    `json:"name"`
-	TargetDate time.Time `json:"target_date"`
-	DoneDate   time.Time `json:"done_date"`
-	Status     bool      `json:"status"`
+	Name         string    `json:"name"`
+	TargetDate   time.Time `json:"target_date"`
+	DoneDate     time.Time `json:"done_date"`
+	Is_completed bool      `json:"is_completed"`
 }
 
 type updateTodoRequest struct {
-	Name       string    `json:"name"`
-	TargetDate time.Time `json:"target_date"`
-	DoneDate   time.Time `json:"done_date"`
-	Status     bool      `json:"status"`
+	Name         string    `json:"name"`
+	TargetDate   time.Time `json:"target_date"`
+	DoneDate     time.Time `json:"done_date"`
+	Is_completed bool      `json:"is_completed"`
 }

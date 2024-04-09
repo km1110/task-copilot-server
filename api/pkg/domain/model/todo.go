@@ -7,20 +7,20 @@ import (
 )
 
 type Todo struct {
-	ID         string
-	Name       string
-	TargetDate time.Time
-	DoneDate   time.Time
-	Status     bool
+	ID           string
+	Name         string
+	TargetDate   time.Time
+	DoneDate     time.Time
+	Is_completed bool
 }
 
-func NewTodo(id, name string, target_date, done_date time.Time, status bool) *Todo {
+func NewTodo(id, name string, target_date, done_date time.Time, is_completed bool) *Todo {
 	return &Todo{
-		ID:         NewTodoID(),
-		Name:       name,
-		TargetDate: target_date,
-		DoneDate:   done_date,
-		Status:     status,
+		ID:           NewTodoID(),
+		Name:         name,
+		TargetDate:   target_date,
+		DoneDate:     done_date,
+		Is_completed: is_completed,
 	}
 }
 
