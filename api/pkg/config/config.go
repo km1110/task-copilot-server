@@ -1,57 +1,36 @@
 package config
 
-import (
-	"fmt"
-	"os"
-)
+import "os"
 
-type env struct {
-	POSTGRES_USER     string
-	POSTGRES_PASSWORD string
-	POSTGRES_DB       string
-	POSTGRES_HOST     string
-	POSTGRES_DRIVER   string
-	ENVIRONMENT       string
+type config struct {
+	dbInfo *DBInfo
 }
 
-var Env env
+type DBInfo struct {
+	USER     string
+	PASSWORD string
+	DATABASE string
+	HOST     string
+	DRIVER   string
+	PORT     string
 
-func init() {
-	var err error
-	var envErrs []error
+	ENVIRONMENT string
+}
 
-	if Env.POSTGRES_USER, err = getEnv("POSTGRES_USER"); err != nil {
-		envErrs = append(envErrs, err)
-	}
-	if Env.POSTGRES_PASSWORD, err = getEnv("POSTGRES_PASSWORD"); err != nil {
-		envErrs = append(envErrs, err)
-	}
-	if Env.POSTGRES_DB, err = getEnv("POSTGRES_DB"); err != nil {
-		envErrs = append(envErrs, err)
-	}
-	if Env.POSTGRES_HOST, err = getEnv("POSTGRES_HOST"); err != nil {
-		envErrs = append(envErrs, err)
-	}
-	if Env.POSTGRES_DRIVER, err = getEnv("POSTGRES_DRIVER"); err != nil {
-		envErrs = append(envErrs, err)
-	}
-	if Env.ENVIRONMENT, err = getEnv("ENVIRONMENT"); err != nil {
-		envErrs = append(envErrs, err)
-	}
-
-	if len(envErrs) != 0 {
-		var errMsg string
-		for _, envErr := range envErrs {
-			errMsg += fmt.Sprintf("%s\n", envErr.Error())
-		}
-		panic(errMsg)
+func NewConfig() *config {
+	return &config{
+		dbInfo: &DBInfo{},
 	}
 }
 
-func getEnv(key string) (string, error) {
-	e := os.Getenv(key)
-	if e == "" {
-		return "", fmt.Errorf("getEnv: %s not found", key)
-	}
-	return e, nil
+func (c *config) DBConfig() DBInfo {
+	c.dbInfo.USER = os.Getenv("POSTGRES_USER")
+	c.dbInfo.PASSWORD = os.Getenv("POSTGRES_PASSWORD")
+	c.dbInfo.DATABASE = os.Getenv("POSTGRES_DB")
+	c.dbInfo.HOST = os.Getenv("POSTGRES_HOST")
+	c.dbInfo.DRIVER = os.Getenv("POSTGRES_DRIVER")
+	c.dbInfo.PORT = os.Getenv("POSTGRES_PORT")
+	c.dbInfo.ENVIRONMENT = os.Getenv("ENVIRONMENT")
+
+	return *c.dbInfo
 }
