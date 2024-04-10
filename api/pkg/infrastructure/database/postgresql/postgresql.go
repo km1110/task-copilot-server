@@ -10,16 +10,19 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func NewDB() (*sql.DB, error) {
+func NewPostgresConnector() (*sql.DB, error) {
+	dbConf := config.NewConfig().DBConfig()
+
 	dsn := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		config.Env.POSTGRES_USER,
-		config.Env.POSTGRES_PASSWORD,
-		config.Env.POSTGRES_HOST,
-		"5432",
-		config.Env.POSTGRES_DB,
+		dbConf.USER,
+		dbConf.PASSWORD,
+		dbConf.HOST,
+		dbConf.PORT,
+		dbConf.DATABASE,
 	)
-	db, err := sql.Open("postgres", dsn)
+
+	db, err := sql.Open(dbConf.DRIVER, dsn)
 
 	if err != nil {
 		tryConnCnt := 1
@@ -28,7 +31,7 @@ func NewDB() (*sql.DB, error) {
 			db, err = sql.Open("postgres", dsn)
 			<-timer.C
 
-			log.Println("NewDB: tryConnDB =", tryConnCnt)
+			log.Println("NewPostgresConnector: tryConnDB =", tryConnCnt)
 			tryConnCnt += 1
 		}
 	}
