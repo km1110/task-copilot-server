@@ -43,7 +43,7 @@ erDiagram
       timestamp updated_at "更新日"
     }
 
-    Event {
+    Events {
       uuid id PK "イベントID"
       uuid user_id FK "作成者"
       uuid tag_id "タグID"
@@ -52,12 +52,14 @@ erDiagram
       timestamp end_date "終了日"
     }
 
-    Role {
+    Roles {
       uuid id PK "ロールID"
       varchar role_name "ロール名"
+      timestamp created_at "作成日"
+      timestamp updated_at "更新日"
     }
 
-    Tag {
+    Tags {
       uuid id PK "タグID"
       uuid user_id FK "ユーザーID"
       varchar tag_name "タグ名"

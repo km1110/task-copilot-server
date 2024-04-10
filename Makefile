@@ -7,5 +7,5 @@ up:
 down:
 	docker compose down
 
-db:
+database:
 	docker compose exec -it postgresql bash
