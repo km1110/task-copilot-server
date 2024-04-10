@@ -11,7 +11,7 @@ import (
 )
 
 func InitRouter() {
-	db, err := postgresql.NewDB()
+	db, err := postgresql.NewPostgresConnector()
 	if err != nil {
 		panic(err)
 	}

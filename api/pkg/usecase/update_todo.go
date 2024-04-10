@@ -17,12 +17,12 @@ func NewUpdateTodo(rt repository.Todo) *updateTodo {
 	return &updateTodo{repoTodo: rt}
 }
 
-func (ut *updateTodo) Exec(ctx context.Context, id, name string, target_date, done_date time.Time, status bool) (*model.Todo, error) {
+func (ut *updateTodo) Exec(ctx context.Context, id, name string, target_date, done_date time.Time, is_completed bool) (*model.Todo, error) {
 	if !model.IsValidTodoID(id) {
 		return nil, xerrors.Errorf("!model.IsValidTodoID: todoID is invalid")
 	}
 
-	t := model.NewTodo(id, name, target_date, done_date, status)
+	t := model.NewTodo(id, name, target_date, done_date, is_completed)
 
 	res, err := ut.repoTodo.UpdateTodo(ctx, id, t)
 	if err != nil {
