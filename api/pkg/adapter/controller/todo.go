@@ -61,7 +61,9 @@ func (tc todoController) CreateTodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+
 	//TODO: generate new todo_id
+	todo.ID = model.NewTodoID()
 
 	res, err := tc.tu.CreateTodo(c, userID, todo)
 	if err != nil {

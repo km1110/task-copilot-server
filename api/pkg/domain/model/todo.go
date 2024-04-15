@@ -7,11 +7,11 @@ import (
 )
 
 type Todo struct {
-	ID           string
-	Name         string
-	TargetDate   time.Time
-	DoneDate     time.Time
-	Is_completed bool
+	ID           string    `json:"id"`
+	Name         string    `json:"name"`
+	TargetDate   time.Time `json:"target_date"`
+	DoneDate     time.Time `json:"done_date"`
+	Is_completed bool      `json:"is_completed"`
 }
 
 func NewTodo(id, name string, target_date, done_date time.Time, is_completed bool) *Todo {
