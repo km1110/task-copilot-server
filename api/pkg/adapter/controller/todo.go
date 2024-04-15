@@ -1,156 +1,105 @@
 package controller
 
 import (
-	"database/sql"
-	"encoding/json"
 	"net/http"
-	"time"
 
-	"github.com/go-chi/chi"
+	"github.com/gin-gonic/gin"
 	"github.com/km1110/task-copilot-server/pkg/domain/model"
-	"github.com/km1110/task-copilot-server/pkg/infrastructure/repository"
 	"github.com/km1110/task-copilot-server/pkg/usecase"
 )
 
-type todoResponse struct {
-	ID           string    `json:"id"`
-	Name         string    `json:"name"`
-	TargetDate   time.Time `json:"target_date"`
-	DoneDate     time.Time `json:"done_date"`
-	Is_completed bool      `json:"is_completed"`
+type ITodoController interface {
+	GetAllTodos(c *gin.Context)
+	GetTodobyId(c *gin.Context)
+	CreateTodo(c *gin.Context)
+	UpdateTodo(c *gin.Context)
+	DeleteTodo(c *gin.Context)
 }
 
-func newTodoResponse(t *model.Todo) *todoResponse {
-	return &todoResponse{
-		ID:           t.ID,
-		Name:         t.Name,
-		TargetDate:   t.TargetDate,
-		DoneDate:     t.DoneDate,
-		Is_completed: t.Is_completed,
-	}
+type todoController struct {
+	tu usecase.ITodoUsecase
 }
 
-func newTodosResponse(ts []*model.Todo) []*todoResponse {
-	var r []*todoResponse
-	for _, t := range ts {
-		r = append(r, newTodoResponse(t))
-	}
-	return r
+func NewTodoController(tu usecase.ITodoUsecase) ITodoController {
+	return &todoController{tu}
 }
 
-func GetTodos(db *sql.DB) http.HandlerFunc {
-	repoTodo := repository.NewTodo(db)
-	ucGetTodo := usecase.NewGetTodo(repoTodo)
+func (tc *todoController) GetAllTodos(c *gin.Context) {
+	//TODO: get user_id
+	userID := "b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2b1"
 
-	handler := func(w http.ResponseWriter, r *http.Request) {
-		// TODO: ユーザーIDの取得方法を作成
-		userID := "b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2b1"
-
-		todo, err := ucGetTodo.Exec(r.Context(), userID)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		res := newTodosResponse(todo)
-		if err := json.NewEncoder(w).Encode(res); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		w.WriteHeader(http.StatusOK)
+	res, err := tc.tu.GetAllTodos(c, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
 	}
 
-	return handler
+	c.JSON(http.StatusOK, res)
 }
 
-func CreateTodo(db *sql.DB) http.HandlerFunc {
-	repoTodo := repository.NewTodo(db)
-	ucTodo := usecase.NewCreateTodo(repoTodo)
+func (tc todoController) GetTodobyId(c *gin.Context) {
+	//TODO: get user_id
+	userID := "b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2b1"
 
-	handler := func(w http.ResponseWriter, r *http.Request) {
-		var reqBody createTodoRequest
-		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+	id := c.Param("todo_id")
 
-		userID := "b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2b1"
-
-		todo, err := ucTodo.Exec(r.Context(), userID, reqBody.Name, reqBody.TargetDate)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		res := newTodoResponse(todo)
-		if err := json.NewEncoder(w).Encode(res); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
-
-		w.WriteHeader(http.StatusCreated)
-	}
-	return handler
-}
-
-func UpdateTodo(db *sql.DB) http.HandlerFunc {
-	repoTodo := repository.NewTodo(db)
-	ucTodo := usecase.NewUpdateTodo(repoTodo)
-
-	handler := func(w http.ResponseWriter, r *http.Request) {
-		var reqBody updateTodoRequest
-		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		todoID := chi.URLParam(r, "todo_id")
-
-		todo, err := ucTodo.Exec(r.Context(), todoID, reqBody.Name, reqBody.TargetDate, reqBody.DoneDate, reqBody.Is_completed)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		res := newTodoResponse(todo)
-		if err := json.NewEncoder(w).Encode(res); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
-
-		w.WriteHeader(http.StatusNoContent)
+	res, err := tc.tu.GetTodobyId(c, userID, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
 	}
 
-	return handler
+	c.JSON(http.StatusOK, res)
 }
 
-func DeleteTodo(db *sql.DB) http.HandlerFunc {
-	repoTodo := repository.NewTodo(db)
-	ucTodo := usecase.NewDeleteTodo(repoTodo)
+func (tc todoController) CreateTodo(c *gin.Context) {
+	//TODO: get user_id
+	userID := "b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2b1"
 
-	handler := func(w http.ResponseWriter, r *http.Request) {
-		todoID := chi.URLParam(r, "todoID")
-
-		err := ucTodo.Exec(r.Context(), todoID)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
-
-		w.WriteHeader(http.StatusNoContent)
+	todo := model.Todo{}
+	if err := c.Bind(&todo); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 
-	return handler
+	//TODO: generate new todo_id
+	todo.ID = model.NewTodoID()
+
+	res, err := tc.tu.CreateTodo(c, userID, todo)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusCreated, res)
 }
 
-type createTodoRequest struct {
-	Name         string    `json:"name"`
-	TargetDate   time.Time `json:"target_date"`
-	DoneDate     time.Time `json:"done_date"`
-	Is_completed bool      `json:"is_completed"`
+func (tc *todoController) UpdateTodo(c *gin.Context) {
+	id := c.Param("todo_id")
+
+	todo := model.Todo{}
+	if err := c.Bind(&todo); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	res, err := tc.tu.UpdateTodo(c, id, todo)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, res)
 }
 
-type updateTodoRequest struct {
-	Name         string    `json:"name"`
-	TargetDate   time.Time `json:"target_date"`
-	DoneDate     time.Time `json:"done_date"`
-	Is_completed bool      `json:"is_completed"`
+func (tc *todoController) DeleteTodo(c *gin.Context) {
+	id := c.Param("todo_id")
+
+	err := tc.tu.DeleteTodo(c, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
 }
