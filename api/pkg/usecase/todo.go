@@ -56,6 +56,10 @@ func (tu todoUsecase) CreateTodo(ctx context.Context, userID string, todo model.
 }
 
 func (tu todoUsecase) UpdateTodo(ctx context.Context, todoID string, todo model.Todo) (model.Todo, error) {
+	if err := tu.tv.TodoValidate(todo); err != nil {
+		return model.Todo{}, nil
+	}
+
 	if err := tu.tr.UpdateTodo(ctx, todoID, &todo); err != nil {
 		return model.Todo{}, nil
 	}
