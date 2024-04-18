@@ -7,16 +7,16 @@ title: ""
 erDiagram
     Users ||--o{ Todos  : ""
     Users ||--o{ Calendar  : ""
-    Users ||--o{ Event  : ""
-    Users ||--o{ Role  : ""
-    Users ||--o{ Tag  : ""
+    Users ||--o{ Events  : ""
+    Users ||--o{ Roles  : ""
+    Users ||--o{ Tags  : ""
     Users ||--o{ UserCalendar  : ""
 
     Calendar ||--o{ UserCalendar : ""
     Calendar ||--o{ CalendarEvent : ""
 
-    Event ||--o{ Tag : ""
-    Event ||--o{ CalendarEvent : ""
+    Events ||--o{ Tags : ""
+    Events ||--o{ CalendarEvent : ""
 
 
     Users {
