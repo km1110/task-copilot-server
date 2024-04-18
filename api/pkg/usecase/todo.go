@@ -5,6 +5,7 @@ import (
 
 	"github.com/km1110/task-copilot-server/pkg/adapter/repository"
 	"github.com/km1110/task-copilot-server/pkg/domain/model"
+	"github.com/km1110/task-copilot-server/pkg/infrastructure/validation"
 )
 
 type ITodoUsecase interface {
@@ -17,10 +18,11 @@ type ITodoUsecase interface {
 
 type todoUsecase struct {
 	tr repository.ITodoRepository
+	tv validation.ITodoValidator
 }
 
-func NewTodoUsecase(tr repository.ITodoRepository) ITodoUsecase {
-	return &todoUsecase{tr}
+func NewTodoUsecase(tr repository.ITodoRepository, tv validation.ITodoValidator) ITodoUsecase {
+	return &todoUsecase{tr, tv}
 }
 
 func (tu todoUsecase) GetAllTodos(ctx context.Context, userID string) ([]model.Todo, error) {
@@ -42,6 +44,10 @@ func (tu todoUsecase) GetTodobyId(ctx context.Context, userID, todoID string) (m
 }
 
 func (tu todoUsecase) CreateTodo(ctx context.Context, userID string, todo model.Todo) (model.Todo, error) {
+	if err := tu.tv.TodoValidate(todo); err != nil {
+		return model.Todo{}, nil
+	}
+
 	if err := tu.tr.CreateTodo(ctx, userID, &todo); err != nil {
 		return model.Todo{}, nil
 	}
