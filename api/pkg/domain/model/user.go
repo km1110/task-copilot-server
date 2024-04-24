@@ -3,10 +3,11 @@ package model
 import "github.com/google/uuid"
 
 type User struct {
-	ID     string
-	Name   string
-	RoleID string
-	Status bool
+	ID          string
+	FirebaseUID string
+	Name        string
+	RoleID      string
+	Status      bool
 }
 
 func NewUser(id, name, role_id string, status bool) *User {
