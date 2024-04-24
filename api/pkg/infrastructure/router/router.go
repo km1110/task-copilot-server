@@ -16,12 +16,19 @@ func InitRouter(db *sql.DB) *gin.Engine {
 	// health chack
 	g.GET("/health", controller.Health)
 
+	// user DPI
+	userRepository := repository.NewUserRepository(db)
+	userValidator := validation.NewUserValidator()
+	userUsecase := usecase.NewUserUsecase(userRepository, userValidator)
+	userController := controller.NewUserController(userUsecase)
+
 	// todo DPI
 	todoRepository := repository.NewTodoRepository(db)
 	todoValidator := validation.NewTodoValidator()
 	todoUsecase := usecase.NewTodoUsecase(todoRepository, todoValidator)
 	todoController := controller.NewTodoController(todoUsecase)
 
+	initUserRouter(&g.RouterGroup, userController)
 	initTodoRouter(&g.RouterGroup, todoController)
 
 	return g
