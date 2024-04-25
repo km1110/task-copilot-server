@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/km1110/task-copilot-server/pkg/adapter/controller"
+	"github.com/km1110/task-copilot-server/pkg/adapter/middleware"
 	"github.com/km1110/task-copilot-server/pkg/adapter/repository"
 	"github.com/km1110/task-copilot-server/pkg/infrastructure/validation"
 	"github.com/km1110/task-copilot-server/pkg/usecase"
@@ -28,8 +29,12 @@ func InitRouter(db *sql.DB) *gin.Engine {
 	todoUsecase := usecase.NewTodoUsecase(todoRepository, todoValidator)
 	todoController := controller.NewTodoController(todoUsecase)
 
-	initUserRouter(&g.RouterGroup, userController)
-	initTodoRouter(&g.RouterGroup, todoController)
+	authGroup := g.Group("/")
+	authGroup.Use(middleware.FirebaseAuth())
+	{
+		initUserRouter(authGroup, userController)
+		initTodoRouter(authGroup, todoController)
+	}
 
 	return g
 }
