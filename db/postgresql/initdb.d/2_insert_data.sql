@@ -3,8 +3,8 @@ INSERT INTO roles ("id","role_name")
 VALUES ('b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2f5','admin');
 
 -- users
-INSERT INTO users ("id","name", "role_id", "is_active")
-VALUES ('b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2b1','kohki', 'b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2f5','true');
+INSERT INTO users ("id", "uid", "name", "role_id", "is_active")
+VALUES ('b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2b1', 'IJ8LimbIfzPXhmqJjR6RBkuYE7M2', 'kohki', 'b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2f5','true');
 
 -- todos
 INSERT INTO todos ("id","user_id","name","target_date","done_date","is_completed")
