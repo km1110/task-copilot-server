@@ -17,6 +17,11 @@ func InitRouter(db *sql.DB) *gin.Engine {
 	// health chack
 	g.GET("/health", controller.Health)
 
+	// auth DPI
+	authRepository := repository.NewAuthRepository(db)
+	authUsecase := usecase.NewAuthUsecase(authRepository)
+	authController := controller.NewAuthController(authUsecase)
+
 	// user DPI
 	userRepository := repository.NewUserRepository(db)
 	userValidator := validation.NewUserValidator()
@@ -28,6 +33,9 @@ func InitRouter(db *sql.DB) *gin.Engine {
 	todoValidator := validation.NewTodoValidator()
 	todoUsecase := usecase.NewTodoUsecase(todoRepository, todoValidator)
 	todoController := controller.NewTodoController(todoUsecase)
+
+	// public router
+	initAuthRouter(g.Group("/"), authController)
 
 	authGroup := g.Group("/")
 	authGroup.Use(middleware.FirebaseAuth())
