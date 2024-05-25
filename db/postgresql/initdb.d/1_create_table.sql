@@ -48,6 +48,7 @@ CREATE TRIGGER refresh_roles_updated_at_step3
 
 CREATE TABLE IF NOT EXISTS "users" (
     "id"         UUID NOT NULL,
+    "uid"        VARCHAR(128) NOT NULL,
     "role_id"    UUID NOT NULL,
     "name"       VARCHAR(255) NOT NULL,
     "is_active"  BOOLEAN DEFAULT 'true' NOT NULL,
