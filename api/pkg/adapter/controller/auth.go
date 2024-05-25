@@ -27,6 +27,10 @@ func NewAuthController(au usecase.IAuthUsecase, firebaseApp firebase.IFirebaseAp
 
 func (ac *authController) Login(c *gin.Context) {
 	token, err := validateAuthHeader(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	uid, err := ac.firebaseApp.VerifyIDToken(c, token)
 	if err != nil {
