@@ -16,7 +16,7 @@ type firebaseApp struct {
 	*firebase.App
 }
 
-func NewFirebase() (*firebaseApp, error) {
+func NewFirebaseApp() (*firebaseApp, error) {
 	opt := option.WithCredentialsFile("./service_accout_key.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
