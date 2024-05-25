@@ -1,17 +1,27 @@
 package main
 
 import (
+	"log"
+
 	"github.com/km1110/task-copilot-server/pkg/infrastructure/database/postgresql"
+	"github.com/km1110/task-copilot-server/pkg/infrastructure/firebase"
 	"github.com/km1110/task-copilot-server/pkg/infrastructure/router"
 )
 
 func main() {
+	// init db
 	db, err := postgresql.NewPostgresConnector()
 	if err != nil {
 		panic(err)
 	}
 
-	r := router.InitRouter(db)
+	// init firebase
+	fbApp, err := firebase.NewFirebaseApp()
+	if err != nil {
+		log.Fatalf("Failed to initialize Firebase: %v", err)
+	}
+
+	r := router.InitRouter(db, fbApp)
 	if err := r.Run(":8080"); err != nil {
 		panic(err)
 	}
