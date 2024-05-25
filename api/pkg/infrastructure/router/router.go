@@ -7,11 +7,12 @@ import (
 	"github.com/km1110/task-copilot-server/pkg/adapter/controller"
 	"github.com/km1110/task-copilot-server/pkg/adapter/middleware"
 	"github.com/km1110/task-copilot-server/pkg/adapter/repository"
+	"github.com/km1110/task-copilot-server/pkg/infrastructure/firebase"
 	"github.com/km1110/task-copilot-server/pkg/infrastructure/validation"
 	"github.com/km1110/task-copilot-server/pkg/usecase"
 )
 
-func InitRouter(db *sql.DB) *gin.Engine {
+func InitRouter(db *sql.DB, fbApp firebase.IFirebaseApp) *gin.Engine {
 	g := gin.Default()
 
 	// health chack
@@ -20,7 +21,7 @@ func InitRouter(db *sql.DB) *gin.Engine {
 	// auth DPI
 	authRepository := repository.NewAuthRepository(db)
 	authUsecase := usecase.NewAuthUsecase(authRepository)
-	authController := controller.NewAuthController(authUsecase)
+	authController := controller.NewAuthController(authUsecase, fbApp)
 
 	// user DPI
 	userRepository := repository.NewUserRepository(db)
