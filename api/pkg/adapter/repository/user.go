@@ -34,7 +34,7 @@ func (ur *userRepository) GetAllUsers(ctx context.Context, users *[]model.User) 
 
 	for rows.Next() {
 		var user model.User
-		if err := rows.Scan(&user.ID, &user.FirebaseUID, &user.Name, &user.RoleID, &user.Status); err != nil {
+		if err := rows.Scan(&user.ID, &user.FirebaseUID, &user.Name, &user.Role.ID, &user.Status); err != nil {
 			return err
 		}
 		*users = append(*users, user)
@@ -52,7 +52,7 @@ func (ur *userRepository) GetUserById(ctx context.Context, uid string, user *mod
 
 	row := ur.db.QueryRowContext(ctx, query, uid)
 
-	if err := row.Scan(&user.ID, &user.Name, &user.RoleID, &user.Status); err != nil {
+	if err := row.Scan(&user.ID, &user.Name, &user.Role.ID, &user.Status); err != nil {
 		return err
 	}
 
@@ -62,7 +62,7 @@ func (ur *userRepository) GetUserById(ctx context.Context, uid string, user *mod
 func (ur *userRepository) CreateUser(ctx context.Context, user *model.User) error {
 	query := `INSERT INTO "users" ("id", "firebase_uid", "name", "role_id", "status") VALUES ($1, $2, $3, $4, $5);`
 
-	_, err := ur.db.ExecContext(ctx, query, user.ID, user.FirebaseUID, user.Name, user.RoleID, user.Status)
+	_, err := ur.db.ExecContext(ctx, query, user.ID, user.FirebaseUID, user.Name, user.Role.ID, user.Status)
 	if err != nil {
 		return err
 	}
@@ -73,7 +73,7 @@ func (ur *userRepository) CreateUser(ctx context.Context, user *model.User) erro
 func (ur *userRepository) UpdateUser(ctx context.Context, uid string, user *model.User) error {
 	query := `UPDATE "users" SET "name" = $1, "role_id" = $2, "status" = $3 WHERE "firebase_uid" = $4;`
 
-	_, err := ur.db.ExecContext(ctx, query, user.Name, user.RoleID, user.Status, uid)
+	_, err := ur.db.ExecContext(ctx, query, user.Name, user.Role.ID, user.Status, uid)
 	if err != nil {
 		return err
 	}
