@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"time"
 )
@@ -52,7 +51,6 @@ func (c *config) CacheConfig() CacheInfo {
 
 	defaultExpiration, err := time.ParseDuration(defaultExpirationStr)
 	if err != nil {
-		fmt.Println("Error parsing default expiration duration")
 		defaultExpiration = 10 * time.Minute
 	}
 
