@@ -7,12 +7,13 @@ import (
 	"github.com/km1110/task-copilot-server/pkg/adapter/controller"
 	"github.com/km1110/task-copilot-server/pkg/adapter/middleware"
 	"github.com/km1110/task-copilot-server/pkg/adapter/repository"
+	"github.com/km1110/task-copilot-server/pkg/infrastructure/cache"
 	"github.com/km1110/task-copilot-server/pkg/infrastructure/firebase"
 	"github.com/km1110/task-copilot-server/pkg/infrastructure/validation"
 	"github.com/km1110/task-copilot-server/pkg/usecase"
 )
 
-func InitRouter(db *sql.DB, fbApp firebase.IFirebaseApp) *gin.Engine {
+func InitRouter(db *sql.DB, fbApp firebase.IFirebaseApp, c cache.IUserCache) *gin.Engine {
 	g := gin.Default()
 
 	// health chack
@@ -20,7 +21,7 @@ func InitRouter(db *sql.DB, fbApp firebase.IFirebaseApp) *gin.Engine {
 
 	// auth DPI
 	authRepository := repository.NewAuthRepository(db)
-	authUsecase := usecase.NewAuthUsecase(authRepository)
+	authUsecase := usecase.NewAuthUsecase(authRepository, c)
 	authController := controller.NewAuthController(authUsecase, fbApp)
 
 	// user DPI
@@ -41,7 +42,7 @@ func InitRouter(db *sql.DB, fbApp firebase.IFirebaseApp) *gin.Engine {
 	authGroup := g.Group("/")
 	authGroup.Use(middleware.FirebaseAuth())
 	{
-		initUserRouter(authGroup, userController)
+		initUserRouter(authGroup, userController, c)
 		initTodoRouter(authGroup, todoController)
 	}
 
