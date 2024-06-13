@@ -1,9 +1,14 @@
 package config
 
-import "os"
+import (
+	"fmt"
+	"os"
+	"time"
+)
 
 type config struct {
-	dbInfo *DBInfo
+	dbInfo     *DBInfo
+	cacheInfor *CacheInfo
 }
 
 type DBInfo struct {
@@ -17,9 +22,15 @@ type DBInfo struct {
 	ENVIRONMENT string
 }
 
+type CacheInfo struct {
+	DefaultExpiration time.Duration
+	CleanupInterval   time.Duration
+}
+
 func NewConfig() *config {
 	return &config{
-		dbInfo: &DBInfo{},
+		dbInfo:     &DBInfo{},
+		cacheInfor: &CacheInfo{},
 	}
 }
 
@@ -33,4 +44,25 @@ func (c *config) DBConfig() DBInfo {
 	c.dbInfo.ENVIRONMENT = os.Getenv("ENVIRONMENT")
 
 	return *c.dbInfo
+}
+
+func (c *config) CacheConfig() CacheInfo {
+	defaultExpirationStr := os.Getenv("CACHE_DEFAULT_EXPIRATION")
+	cleanupIntervalStr := os.Getenv("CACHE_CLEANUP_INTERVAL")
+
+	defaultExpiration, err := time.ParseDuration(defaultExpirationStr)
+	if err != nil {
+		fmt.Println("Error parsing default expiration duration")
+		defaultExpiration = 10 * time.Minute
+	}
+
+	cleanupInterval, err := time.ParseDuration(cleanupIntervalStr)
+	if err != nil {
+		cleanupInterval = 30 * time.Minute
+	}
+
+	c.cacheInfor.DefaultExpiration = defaultExpiration
+	c.cacheInfor.CleanupInterval = cleanupInterval
+
+	return *c.cacheInfor
 }
