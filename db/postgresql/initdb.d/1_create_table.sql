@@ -30,7 +30,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE TABLE IF NOT EXISTS "roles" (
     "id"            UUID NOT NULL,
-    "role_name"     VARCHAR(255) NOT NULL,
+    "name"     VARCHAR(255) NOT NULL,
     "created_at"    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at"    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY("id")
@@ -93,7 +93,7 @@ CREATE TRIGGER refresh_todos_updated_at_step3
 
 CREATE TABLE IF NOT EXISTS "calendar" (
     "id"            UUID NOT NULL,
-    "calendar_name" VARCHAR(255) NOT NULL,
+    "name" VARCHAR(255) NOT NULL,
     "created_at"    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at"    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY("id")
@@ -135,7 +135,7 @@ CREATE TRIGGER refresh_events_updated_at_step3
 CREATE TABLE IF NOT EXISTS "tags" (
     "id"            UUID NOT NULL,
     "user_id"       UUID NOT NULL,
-    "tag_name"      VARCHAR(255) NOT NULL,
+    "name"          VARCHAR(255) NOT NULL,
     "tag_color"     VARCHAR(255) NOT NULL,
     "created_at"    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at"    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
