@@ -1,10 +1,10 @@
 -- roles
-INSERT INTO roles ("id","role_name")
+INSERT INTO roles ("id","name")
 VALUES ('b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2f5','admin');
 
 -- users
 INSERT INTO users ("id", "uid", "name", "role_id", "is_active")
-VALUES ('b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2b1', 'IJ8LimbIfzPXhmqJjR6RBkuYE7M2', 'kohki', 'b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2f5','true');
+VALUES ('b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2b1', 'jVic8rZeGOROrQttCV5TAHjXunH3', 'kohki', 'b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2f5','true');
 
 -- todos
 INSERT INTO todos ("id","user_id","name","target_date","done_date","is_completed")
@@ -12,11 +12,11 @@ VALUES ('e1d388da-47e0-ca1d-2722-0a41d93f872f','b9d4a4ab-ea45-d22f-3ed6-46c32ec8
         ('91d1a74f-8d0e-7287-b218-31e8fdaf8ad5','b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2b1','task2', '2021-01-01 00:00:00', '2021-01-01 00:00:00','true');
 
 -- calendar
-INSERT INTO calendar ("id","calendar_name")
+INSERT INTO calendar ("id","name")
 VALUES ('e1d388da-47e0-ca1d-2722-0a41d93f852f','parsonal');
 
 -- tags
-INSERT INTO tags ("id","user_id","tag_name","tag_color")
+INSERT INTO tags ("id","user_id","name","tag_color")
 VALUES ('e1d388da-47e0-ca1d-2742-0a41d93f852f','b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2b1','school','#ff0000'),
         ('e1d388da-47e0-ca1d-2745-0a41d93f852f','b9d4a4ab-ea45-d22f-3ed6-46c32ec8b2b1','part-time','#00ff00');
 

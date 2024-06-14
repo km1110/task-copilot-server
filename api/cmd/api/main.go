@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/km1110/task-copilot-server/pkg/infrastructure/cache"
 	"github.com/km1110/task-copilot-server/pkg/infrastructure/database/postgresql"
 	"github.com/km1110/task-copilot-server/pkg/infrastructure/firebase"
 	"github.com/km1110/task-copilot-server/pkg/infrastructure/router"
@@ -21,7 +22,10 @@ func main() {
 		log.Fatalf("Failed to initialize Firebase: %v", err)
 	}
 
-	r := router.InitRouter(db, fbApp)
+	// init cache
+	c := cache.NewUserCache()
+
+	r := router.InitRouter(db, fbApp, c)
 	if err := r.Run(":8080"); err != nil {
 		panic(err)
 	}

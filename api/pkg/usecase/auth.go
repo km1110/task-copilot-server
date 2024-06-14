@@ -5,6 +5,7 @@ import (
 
 	"github.com/km1110/task-copilot-server/pkg/adapter/repository"
 	"github.com/km1110/task-copilot-server/pkg/domain/model"
+	"github.com/km1110/task-copilot-server/pkg/infrastructure/cache"
 )
 
 type IAuthUsecase interface {
@@ -14,10 +15,11 @@ type IAuthUsecase interface {
 
 type authUsecase struct {
 	ar repository.IAuthRepository
+	uc cache.IUserCache
 }
 
-func NewAuthUsecase(ar repository.IAuthRepository) IAuthUsecase {
-	return &authUsecase{ar}
+func NewAuthUsecase(ar repository.IAuthRepository, uc cache.IUserCache) IAuthUsecase {
+	return &authUsecase{ar, uc}
 }
 
 func (au *authUsecase) Login(ctx context.Context, uid string) (string, error) {
@@ -25,6 +27,9 @@ func (au *authUsecase) Login(ctx context.Context, uid string) (string, error) {
 	if err := au.ar.Login(ctx, uid, &user); err != nil {
 		return "", err
 	}
+
+	au.uc.Set("role", user.Role.Name)
+
 	return "Login Success", nil
 }
 
