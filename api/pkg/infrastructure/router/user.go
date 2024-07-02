@@ -4,14 +4,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/km1110/task-copilot-server/pkg/adapter/controller"
 	"github.com/km1110/task-copilot-server/pkg/adapter/middleware"
+	"github.com/km1110/task-copilot-server/pkg/adapter/repository"
 	"github.com/km1110/task-copilot-server/pkg/infrastructure/cache"
 )
 
-func initUserRouter(router *gin.RouterGroup, uc controller.IUserController, c cache.IUserCache) {
+func initUserRouter(router *gin.RouterGroup, uc controller.IUserController, rr repository.IRedisRepository, c cache.IUserCache) {
 	r := router.Group("/users")
 	r.GET("", uc.GetAllUsers)
 	r.GET("/:user_id", uc.GetUserById)
-	r.Use(middleware.AuthorizationMiddleware(c))
+	r.Use(middleware.AuthorizationMiddleware(rr, c))
 	{
 		r.POST("", uc.CreateUser)
 		r.PATCH("/:user_id", uc.UpdateUser)
