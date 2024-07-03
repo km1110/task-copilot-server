@@ -10,15 +10,17 @@ import (
 
 func AuthorizationMiddleware(rr repository.IRedisRepository, uc cache.IUserCache) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		role := uc.Get("role")
+		uid, _ := c.Get("firebaseUID")
+		key := "user:" + uid.(string)
+		role := uc.Get(key)
 		if role == "" {
-			r, err := rr.Get("role")
+			r, err := rr.Get(key)
 			if err != nil {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 				c.Abort()
 				return
 			}
-			uc.Set("role", r)
+			uc.Set(key, r)
 			role = r
 		}
 

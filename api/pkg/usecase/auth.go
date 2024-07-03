@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"context"
+	"log"
+	"time"
 
 	"github.com/km1110/task-copilot-server/pkg/adapter/repository"
 	"github.com/km1110/task-copilot-server/pkg/domain/model"
@@ -15,11 +17,12 @@ type IAuthUsecase interface {
 
 type authUsecase struct {
 	ar repository.IAuthRepository
+	rr repository.IRedisRepository
 	uc cache.IUserCache
 }
 
-func NewAuthUsecase(ar repository.IAuthRepository, uc cache.IUserCache) IAuthUsecase {
-	return &authUsecase{ar, uc}
+func NewAuthUsecase(ar repository.IAuthRepository, rr repository.IRedisRepository, uc cache.IUserCache) IAuthUsecase {
+	return &authUsecase{ar, rr, uc}
 }
 
 func (au *authUsecase) Login(ctx context.Context, uid string) (string, error) {
@@ -27,8 +30,18 @@ func (au *authUsecase) Login(ctx context.Context, uid string) (string, error) {
 	if err := au.ar.Login(ctx, uid, &user); err != nil {
 		return "", err
 	}
+	key := "user:" + uid
+	au.uc.Set(key, user.Role.Name)
 
-	au.uc.Set("role", user.Role.Name)
+	go func() {
+		time.Sleep(30 * time.Second)
+		role := au.uc.Get(key)
+		if role == "" {
+			log.Println("role is not found")
+			return
+		}
+		au.rr.Set(key, role)
+	}()
 
 	return "Login Success", nil
 }
