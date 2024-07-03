@@ -20,8 +20,8 @@ services:
   postgresql:
     container_name: task-copilot-postgresql
     build:
-      context: .
-      dockerfile: ./db/postgresql/Dockerfile
+      context: ./db/postgresql
+      dockerfile: Dockerfile
     tty: true
     restart: always
     env_file:
@@ -29,8 +29,18 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - todo-postgresql-vol:/var/lib/postgresql
+      - task-copilot-postgresql-vol:/var/lib/postgresql
       - ./db/postgresql/initdb.d:/docker-entrypoint-initdb.d
+  redis:
+    container_name: task-copilot-redis
+    image: redis:latest
+    tty: true
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - task-copilot-redis-vol:/data
 
 volumes:
-  todo-postgresql-vol:
+  task-copilot-postgresql-vol:
+  task-copilot-redis-vol:

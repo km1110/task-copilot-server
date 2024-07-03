@@ -4,23 +4,26 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/km1110/task-copilot-server/pkg/adapter/repository"
 	"github.com/km1110/task-copilot-server/pkg/infrastructure/cache"
 )
 
-// AuthorizationMiddleware is a middleware to check if the user is authorized to access the endpoint
-
-func AuthorizationMiddleware(uc cache.IUserCache) gin.HandlerFunc {
+func AuthorizationMiddleware(rr repository.IRedisRepository, uc cache.IUserCache) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Get the user from the context
-		role := uc.Get("role")
+		uid, _ := c.Get("firebaseUID")
+		key := "user:" + uid.(string)
+		role := uc.Get(key)
 		if role == "" {
-			// ここでredisにアクセスしてroleを取得する
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-			c.Abort()
-			return
+			r, err := rr.Get(key)
+			if err != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+				c.Abort()
+				return
+			}
+			uc.Set(key, r)
+			role = r
 		}
 
-		// Check if the user is authorized
 		if role != "admin" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 			c.Abort()

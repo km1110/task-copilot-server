@@ -7,6 +7,7 @@ import (
 
 type config struct {
 	dbInfo     *DBInfo
+	redisInfo  *RedisInfo
 	cacheInfor *CacheInfo
 }
 
@@ -21,6 +22,12 @@ type DBInfo struct {
 	ENVIRONMENT string
 }
 
+type RedisInfo struct {
+	Addr     string
+	Password string
+	DB       int
+}
+
 type CacheInfo struct {
 	DefaultExpiration time.Duration
 	CleanupInterval   time.Duration
@@ -29,6 +36,7 @@ type CacheInfo struct {
 func NewConfig() *config {
 	return &config{
 		dbInfo:     &DBInfo{},
+		redisInfo:  &RedisInfo{},
 		cacheInfor: &CacheInfo{},
 	}
 }
@@ -43,6 +51,14 @@ func (c *config) DBConfig() DBInfo {
 	c.dbInfo.ENVIRONMENT = os.Getenv("ENVIRONMENT")
 
 	return *c.dbInfo
+}
+
+func (c *config) RedisConfig() RedisInfo {
+	c.redisInfo.Addr = os.Getenv("REDIS_ADDR")
+	c.redisInfo.Password = os.Getenv("REDIS_PASSWORD")
+	c.redisInfo.DB = 0
+
+	return *c.redisInfo
 }
 
 func (c *config) CacheConfig() CacheInfo {

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
 	"github.com/km1110/task-copilot-server/pkg/adapter/controller"
 	"github.com/km1110/task-copilot-server/pkg/adapter/middleware"
 	"github.com/km1110/task-copilot-server/pkg/adapter/repository"
@@ -13,15 +14,18 @@ import (
 	"github.com/km1110/task-copilot-server/pkg/usecase"
 )
 
-func InitRouter(db *sql.DB, fbApp firebase.IFirebaseApp, c cache.IUserCache) *gin.Engine {
+func InitRouter(db *sql.DB, rc *redis.Client, fbApp firebase.IFirebaseApp, c cache.IUserCache) *gin.Engine {
 	g := gin.Default()
 
 	// health chack
 	g.GET("/health", controller.Health)
 
+	// redis DPI
+	redisRepository := repository.NewRedisRepository(rc)
+
 	// auth DPI
 	authRepository := repository.NewAuthRepository(db)
-	authUsecase := usecase.NewAuthUsecase(authRepository, c)
+	authUsecase := usecase.NewAuthUsecase(authRepository, redisRepository, c)
 	authController := controller.NewAuthController(authUsecase, fbApp)
 
 	// user DPI
@@ -42,7 +46,7 @@ func InitRouter(db *sql.DB, fbApp firebase.IFirebaseApp, c cache.IUserCache) *gi
 	authGroup := g.Group("/")
 	authGroup.Use(middleware.FirebaseAuth())
 	{
-		initUserRouter(authGroup, userController, c)
+		initUserRouter(authGroup, userController, redisRepository, c)
 		initTodoRouter(authGroup, todoController)
 	}
 
