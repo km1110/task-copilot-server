@@ -14,6 +14,7 @@ import (
 type IAuthController interface {
 	Login(ctx *gin.Context)
 	Register(ctx *gin.Context)
+	Logout(ctx *gin.Context)
 }
 
 type authController struct {
@@ -77,15 +78,38 @@ func (ac *authController) Register(c *gin.Context) {
 	c.JSON(http.StatusOK, msg)
 }
 
+func (ac *authController) Logout(c *gin.Context) {
+	token, err := validateAuthHeader(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	uid, err := ac.firebaseApp.VerifyIDToken(c, token)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	msg, err := ac.au.Logout(c, uid)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.Set("firebaseUID", nil)
+	c.JSON(http.StatusOK, msg)
+}
+
 func validateAuthHeader(c *gin.Context) (string, error) {
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
-		return "", errors.New("Authorization header required")
+		return "", errors.New("authorization header required")
 	}
 
 	token := strings.TrimPrefix(authHeader, "Bearer ")
 	if token == authHeader {
-		return "", errors.New("Invalid token format")
+		return "", errors.New("invalid token format")
 	}
 
 	return token, nil

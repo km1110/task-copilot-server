@@ -13,6 +13,7 @@ import (
 type IAuthUsecase interface {
 	Login(ctx context.Context, uid string) (string, error)
 	Register(ctx context.Context, user model.User) (string, error)
+	Logout(ctx context.Context, uid string) (string, error)
 }
 
 type authUsecase struct {
@@ -51,4 +52,11 @@ func (au *authUsecase) Register(ctx context.Context, user model.User) (string, e
 		return "", err
 	}
 	return "Register Success", nil
+}
+
+func (au *authUsecase) Logout(ctx context.Context, uid string) (string, error) {
+	key := "user:" + uid
+	au.uc.Delete(key)
+	au.rr.Delete(key)
+	return "Logout Success", nil
 }
