@@ -97,6 +97,7 @@ func (ac *authController) Logout(c *gin.Context) {
 		return
 	}
 
+	c.Set("firebaseUID", nil)
 	c.JSON(http.StatusOK, msg)
 }
 
